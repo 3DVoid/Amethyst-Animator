@@ -13,8 +13,9 @@
 - Turn timeline into a listview to be able to switch colors. idk tho - [Timeline.cpp](src/ui/Timeline.cpp)
 - Add timeline zooming
 - Add Track.cpp/hpp
+    - Also do a for loop for adding tracks into the thing. Prob gonna use List View for this but idk, I js wanna go to sleep
 - Finish UpdateTime() and ruler in Timeline.cpp (im not linking it again)
--
+- I'm tired ash
 - idk what else to put here
 
 - Finish the mod ig, idk
