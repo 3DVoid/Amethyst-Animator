@@ -9,6 +9,12 @@
 - Make addKeyframe in Track.cpp add it at current time (again playhead ;})
 - Add Playhead Scrubbing too (using .update and stuff) - [AnimationManager.cpp](src/core/AnimationManager.cpp)
 - About.md/README.md/logo.png/changelog.md/mod.json/settings/everythinginthisuniverse/idk/again/slash/slash2/slash30
+- Create buttons like File, Edit, Options and more - [Window.cpp](src/ui/Window.cpp)
+- Turn timeline into a listview to be able to switch colors. idk tho - [Timeline.cpp](src/ui/Timeline.cpp)
+- Add timeline zooming
+- Add Track.cpp/hpp
+- Finish UpdateTime() and ruler in Timeline.cpp (im not linking it again)
+-
 - idk what else to put here
 
 - Finish the mod ig, idk

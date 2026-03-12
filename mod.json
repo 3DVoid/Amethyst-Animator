@@ -6,12 +6,25 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"id": "3dvoidyt.sun-animator",
-	"name": "Sun Animator",
+	"id": "3dvoidyt.amethyst-animator",
+	"name": "Amethyst Animator",
 	"version": "v1.0.0-alpha.0",
 	"developer": "3DVoidYT",
 	"description": "Moon Animator but for Geometry Dash!",
 	"dependencies": {
 		"geode.node-ids": ">=v1.20.0"
+	},
+	"resources": {
+		"spritesheets": {
+			"Images": [
+				"resources/Images/*.png"
+			]
+		},
+		"fonts": {
+			"Courier": {
+				"path": "resources/Fonts/cour.ttf",
+				"size": 24
+			}
+		}
 	}
 }

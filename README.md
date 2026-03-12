@@ -1,4 +1,4 @@
-# Sun Animator
+# Amethyst Animator
 
 MOON ANIMATOR FOR GEOMETRY DASH
 
