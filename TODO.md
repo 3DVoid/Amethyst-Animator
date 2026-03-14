@@ -19,9 +19,9 @@
 - Add keyframe dragging to move keyframes, this means snapping too ![](images.jpg)
 - ~~Add getTimeline() in [Window.hpp](src/ui/Window.hpp)/[Window.cpp](src/ui/Widnow.cpp)~~
 - Add refreshTracks() in [Timeline.hpp](src/ui/Timeline.hpp)/[Timeline.cpp](src/ui/Timeline.hpp)
-- Add getWindow() when doing hooks
-- Add positioning for Trackline's in [Trackline.cpp](src/ui/Trackline.cpp)/[Trackline.hpp](src/ui/Trackline.hpp)
-- EditorUI.cpp::14
+- ~~Add getWindow() when doing hooks~~
+- ~~Add positioning for Trackline's in [Trackline.cpp](src/ui/Trackline.cpp)/[Trackline.hpp](src/ui/Trackline.hpp)~~
+- EditorUI.cpp::36
 - ~~I'm tired ash~~
 - idk what else to put here
 

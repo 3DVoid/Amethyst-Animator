@@ -27,6 +27,8 @@ bool Trackline::init() {
     PLCLine->setContentSize({ 100, 25 });
     PLCLine->setOpacity(0);
 
+    updateTrackline();
+
     return true;
 }
 

@@ -26,7 +26,7 @@ struct EL : Modify<EL, EditorUI> {
         if (!EditorUI::init(editorLayer)) return false;
         if (!this->m_undoBtn || !this->m_undoBtn->getParent()) return false;
 
-        log::info("Undo Button layout = {}", this->m_undoBtn->getParent()->getID());
+        log::info("Undo Button menu = {}", this->m_undoBtn->getParent()->getID());
 
         auto AASpr = CCSprite::createWithSpriteFrameName("AA_button01.png"_spr);
         auto AABtn = CCMenuItemSpriteExtra::create(AASpr, this, menu_selector(EL::onAABtn));
