@@ -6,8 +6,38 @@ using namespace geode::prelude;
 #include "../core/Animator.hpp"
 #include "../core/AnimationManager.hpp"
 #include "../data/Keyframe.hpp"
+#include "../ui/Window.hpp"
 
 struct EL : Modify<EL, EditorUI> {
+    AnimationWindow* m_currentWindow = nullptr;
+
+    AnimationWindow* getWindow() {
+        return m_currentWindow;
+    }
+
+    void onAABtn(CCObject*) {
+        auto window = AnimationWindow::create();
+        if (!window) return;
+        this->addChild(window);
+        m_currentWindow = window;
+    }
+
+    bool init(LevelEditorLayer* editorLayer) {
+        if (!EditorUI::init(editorLayer)) return false;
+        if (!this->m_undoBtn || !this->m_undoBtn->getParent()) return false;
+
+        log::info("Undo Button layout = {}", this->m_undoBtn->getParent()->getID());
+
+        auto AASpr = CCSprite::createWithSpriteFrameName("AA_button01.png"_spr);
+        auto AABtn = CCMenuItemSpriteExtra::create(AASpr, this, menu_selector(EL::onAABtn));
+        
+        auto menu = this->m_undoBtn->getParent();
+        menu->addChild(AABtn);
+        // Replace this with a better version bc this aint stable
+
+        return true;
+    }
+
     void updateObjectInfoLabel() {
         if (!m_selectedObjects) {
             EditorUI::updateObjectInfoLabel();

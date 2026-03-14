@@ -4,6 +4,7 @@
 using namespace geode::prelude;
 
 #include "Window.hpp"
+#include "Timeline.hpp"
 
 bool AnimationWindow::init() {
     if (!CCLayer::init()) return false;
@@ -26,6 +27,10 @@ bool AnimationWindow::init() {
     titleBar->setZOrder(1);
     windowbg->addChild(titleBar);
 
+    auto Timeline = Timeline::create();
+    windowbg->addChildAtPosition(Timeline, Anchor::BottomRight, CCPointZero, {1.f, 0.f});
+    m_timeline = Timeline;
+
     // TODO: Create buttons like File, Edit, Options and more
 
     return true;
@@ -39,4 +44,8 @@ AnimationWindow* AnimationWindow::create() {
         CC_SAFE_DELETE(ret);
     }
     return ret;
+}
+
+Timeline* AnimationWindow::getTimeline() {
+    return m_timeline;
 }

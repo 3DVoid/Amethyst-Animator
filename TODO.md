@@ -1,7 +1,7 @@
 # TODO
 ---
 
-- Add playhead, then in [EditorUI.cpp](src/hooks/EditorUI.cpp) add checks for if a keyframe is on the same track and same time then don't auto-create.
+- ~~Add playhead~~, then in [EditorUI.cpp](src/hooks/EditorUI.cpp) add checks for if a keyframe is on the same track and same time then don't auto-create.
     - Also add time for Keyframe with playhead
 - UI!
 - Add alpha, color, transform stuff, and hsv into Keyframe - [Keyframe.hpp](src/data/Keyframe.hpp)/[Track.cpp](src/core/Track.cpp)
@@ -11,11 +11,18 @@
 - About.md/README.md/logo.png/changelog.md/mod.json/settings/everythinginthisuniverse/idk/again/slash/slash2/slash30
 - Create buttons like File, Edit, Options and more - [Window.cpp](src/ui/Window.cpp)
 - Turn timeline into a listview to be able to switch colors. idk tho - [Timeline.cpp](src/ui/Timeline.cpp)
-- Add timeline zooming
-- Add Track.cpp/hpp
-    - Also do a for loop for adding tracks into the thing. Prob gonna use List View for this but idk, I js wanna go to sleep
-- Finish UpdateTime() and ruler in Timeline.cpp (im not linking it again)
-- I'm tired ash
+- Add timeline zooming, make ruler zoom be like every .5 seconds at at higher zoom
+- ~~Add Track**line**.cpp/hpp~~
+    - Also do a for loop for adding tracks into the thing. Prob gonna use List View for this but idk, ~~I js wanna go to sleep~~
+- Handle colors with Trackline.cpp/Trackline.hpp
+- ~~Finish UpdateTime() and ruler in Timeline.cpp (im not linking it again)~~
+- Add keyframe dragging to move keyframes, this means snapping too ![](images.jpg)
+- ~~Add getTimeline() in [Window.hpp](src/ui/Window.hpp)/[Window.cpp](src/ui/Widnow.cpp)~~
+- Add refreshTracks() in [Timeline.hpp](src/ui/Timeline.hpp)/[Timeline.cpp](src/ui/Timeline.hpp)
+- Add getWindow() when doing hooks
+- Add positioning for Trackline's in [Trackline.cpp](src/ui/Trackline.cpp)/[Trackline.hpp](src/ui/Trackline.hpp)
+- EditorUI.cpp::14
+- ~~I'm tired ash~~
 - idk what else to put here
 
 - Finish the mod ig, idk

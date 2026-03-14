@@ -5,6 +5,8 @@ using namespace geode::prelude;
 #include "Track.hpp"
 #include "../data/Keyframe.hpp"
 #include <algorithm>
+#include "../ui/Window.hpp"
+#include "../ui/Timeline.hpp"
 
 void Track::addKeyframe(const KeyframeData& KF) {
     Keyframes.push_back(KF);
