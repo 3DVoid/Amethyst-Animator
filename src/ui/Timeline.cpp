@@ -2,6 +2,8 @@
 #include <Geode/modify/CCLayer.hpp>
 #include <iomanip>
 #include <sstream>
+#include <Geode/ui/ListView.hpp>
+#include <Geode/ui/TextInput.hpp>
 
 using namespace geode::prelude;
 using namespace cocos2d;
@@ -55,6 +57,20 @@ bool Timeline::init() {
     m_ruler->setZOrder(2);
     timelineBg->addChild(m_ruler);
 
+    if (!m_trackItems) return false;
+    m_trackLV = ListView::create(m_trackItems, 27, 100, 162);
+    if (!m_trackLV) return false;
+    
+    if (!m_trackNames) return false;
+    m_nameLV = ListView::create(m_trackNames, 27, 50, 162);
+    if (!m_nameLV) return false;
+    m_nameLV->setPrimaryCellColor({ 33, 33, 33 });
+    m_nameLV->setSecondaryCellColor({ 48, 10, 69 });
+    m_nameLV->setAnchorPoint({ 0.f, 0.f });
+    timelineBg->addChildAtPosition(m_nameLV, Anchor::BottomLeft);
+
+    refreshTracks();
+
     return true;
 }
 
@@ -68,9 +84,9 @@ Timeline* Timeline::create() {
     return ret;
 }
 
-bool Timeline::ccTouchBegan(CCTouch *pTouch, cocos2d::CCEvent *pEvent) {
+bool Timeline::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
     if (!pTouch) return false;
-    m_touchPoint = pTouch->getLocation();
+    m_touchPoint = convertTouchToNodeSpace(pTouch);
     m_isDragging = false;
     if (!m_playheadGroup) return false;
     auto pGPos = m_playheadGroup->getPosition();
@@ -133,8 +149,45 @@ void Timeline::updateTime() {
     for (int i = index; i < m_labels.size(); i++) {
         m_labels[i]->setVisible(false);
     }
+
+    refreshTracks();
 }
 
 float Timeline::getCurrentTime() {
     return m_currentTime;
+}
+
+void Timeline::refreshTracks() {
+    auto anim = AnimMGR::getCurrentAnimation();
+    if (!anim || !m_trackLV ) return;
+    
+    auto index = 1;
+    for (auto& track1 : anim->Tracks) {
+        if (Tracks.find(track1.first) != Tracks.end()) {
+            auto it = Tracks.find(track1.first);
+            auto track = it->second;
+            
+            if (!track.trackline) {
+                auto trackline = Trackline::create(it->first);
+                track.trackline = trackline;
+                m_trackItems->addObject(trackline);
+                m_trackLV->reloadAll();
+            } else {
+                track.trackline->updateTrackline();
+            }
+
+            if (track.pendingName) {
+                auto label = CCTextInputNode::create(40, 27, "Enter text here...", "cour.ttf");
+                if (!label) continue;
+                label->setMaxLabelLength(20);
+                label->setLabelNormalColor({ 255, 255, 255 });
+                label->setString("Object " + std::to_string(index));
+                label->refreshLabel();
+                track.name = label->getString();
+                track.pendingName = false;
+                m_trackNames->addObject(label);
+            }
+            index++;
+        }
+    }
 }

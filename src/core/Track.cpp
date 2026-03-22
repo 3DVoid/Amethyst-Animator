@@ -7,6 +7,7 @@ using namespace geode::prelude;
 #include <algorithm>
 #include "../ui/Window.hpp"
 #include "../ui/Timeline.hpp"
+#include "AnimationManager.hpp"
 
 void Track::addKeyframe(const KeyframeData& KF) {
     Keyframes.push_back(KF);
@@ -39,4 +40,7 @@ void Track::updateKeyframe(float time, std::string value, Values change) {
     if (value == "rot") KF->rot = std::get<float>(change);
     if (value == "time") KF->time = std::get<float>(change);
     if (value == "easing") KF->easing = std::get<EasingType>(change);
+    if (value == "color") KF->color = std::get<ccColor3B>(change);
+    if (value == "hsv") KF->hsv = std::get<HSV>(change);
+    if (value == "alpha") KF->alpha = std::get<float>(change);
 }

@@ -4,7 +4,7 @@
 #include "../data/Keyframe.hpp"
 #include <variant>
 
-using Values = std::variant<float, EasingType>;
+using Values = std::variant<float, EasingType, cocos2d::ccColor3B, cocos2d::extension::HSV>;
 
 class Track {
     public:
