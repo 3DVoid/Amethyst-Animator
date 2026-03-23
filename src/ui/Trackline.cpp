@@ -6,6 +6,8 @@ using namespace geode::prelude;
 #include "../core/AnimationManager.hpp"
 #include "../core/Animator.hpp"
 #include "../hooks/EditorUI.cpp"
+#include <cmath>
+#include <algorithm>
 
 // PLC = Placeholder
 
@@ -26,6 +28,10 @@ void Trackline::setID(int uniqueID) {
 
 bool Trackline::init() {
     if (!Trackline::init()) return false;
+    
+    this->setTouchEnabled(true);
+    this->setTouchMode(kCCTouchesOneByOne);
+    this->setTouchPriority(-1);
 
     auto PLCLine = CCScale9Sprite::createWithSpriteFrameName("AA_square01.png"_spr);
     if (!PLCLine) return false;
@@ -73,8 +79,8 @@ void Trackline::updateTrackline() {
         this->addChild(keyframeSprite);
         keyframes.push_back(keyframeSprite);
         auto& keyframe = track->Keyframes[i];
-        if (keyframe.time >= start && keyframe.time <= end) {
-            keyframeSprite->setPositionX((keyframe.time * timeline->m_secondDistance) - timeline->m_scrollOffset);
+        if (keyframe->time >= start && keyframe->time <= end) {
+            keyframeSprite->setPositionX((keyframe->time * timeline->m_secondDistance) - timeline->m_scrollOffset);
             keyframeSprite->setVisible(true);
             
             // index++;
@@ -95,9 +101,10 @@ bool Trackline::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
     if (!track) return false;
 
     auto touch = this->convertTouchToNodeSpace(pTouch);
-    for (auto& keyframe : keyframes) {
+    for (auto keyframe : keyframes) {
         if (keyframe->boundingBox().containsPoint(touch)) {
             m_keyframeTouched = keyframe->getTag();
+            selectKeyframe(keyframe->getTag());
             return true;
         }
     }
@@ -113,6 +120,7 @@ void Trackline::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
     if (!anim) return;
 
     auto track = anim->getTrack(m_ID);
+    if (!track) return;
 
     auto EditorUI = EL::get();
     if (!EditorUI) return;
@@ -123,11 +131,33 @@ void Trackline::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
     auto timeline = window->getTimeline();
     if (!timeline) return;
 
-    if (fabs(movePoint.x - m_touchPoint.x) > timeline->m_secondDistance / 1.f) { // 1 is a placeholder for my interval
-        auto& keyframe = track->Keyframes[m_keyframeTouched];
+    if (fabs(movePoint.x - m_touchPoint.x) > timeline->m_secondDistance / timeline->m_interval) {
+        if (track->Keyframes.size() < keyframes[m_keyframeTouched]->getTag()) {
+            return;
+        }
+        auto keyframe = track->Keyframes[m_keyframeTouched];
         auto keyframeSprite = keyframes[m_keyframeTouched];
         if (!keyframeSprite) return;
-        keyframeSprite->setPositionX(round(movePoint.x / (timeline->m_secondDistance / 1.f)) * (timeline->m_secondDistance / 1.f) - timeline->m_scrollOffset); // ^^
-        keyframe.time = round((keyframeSprite->getPositionX() + timeline->m_scrollOffset) / 1.f); // ^
+        keyframeSprite->setPositionX(round(movePoint.x / (timeline->m_secondDistance / timeline->m_interval)) * (timeline->m_secondDistance / timeline->m_interval) - timeline->m_scrollOffset);
+        keyframe->time = (keyframeSprite->getPositionX() + timeline->m_scrollOffset) / timeline->m_secondDistance;
     }
+}
+
+void Trackline::selectKeyframe(int id) {
+    auto anim = AnimMGR::getCurrentAnimation();
+    if (!anim) return;
+
+    auto track = anim->getTrack(m_ID);
+    if (!track) return;
+
+    KeyWithSprite KF;
+
+    KF.keyframeSprite = keyframes[id];
+    if (track->Keyframes.size() < KF.keyframeSprite->getTag()) {
+            return;
+        }
+    KF.keyframe = track->Keyframes[id];
+    
+    m_selectedKeyframes.clear(); // make this an if statement when adding selection mode
+    m_selectedKeyframes.insert({id, KF});
 }

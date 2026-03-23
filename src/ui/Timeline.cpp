@@ -2,7 +2,11 @@
 #include <Geode/modify/CCLayer.hpp>
 #include <iomanip>
 #include <sstream>
+#include <regex>
+#include <cmath>
 #include <Geode/ui/ListView.hpp>
+#include <Geode/ui/TextInput.hpp>
+#include <Geode/binding/Slider.hpp>
 #include <Geode/ui/TextInput.hpp>
 
 using namespace geode::prelude;
@@ -10,13 +14,15 @@ using namespace cocos2d;
 
 #include "Timeline.hpp"
 #include "../core/AnimationManager.hpp"
+#include "../core/Animator.hpp"
+#include "../hooks/EditorUI.cpp"
 
 bool Timeline::init() {
     if (!Timeline::init()) return false;
     // I might have to add checks for my sprites
     this->setTouchEnabled(true);
     this->setTouchMode(kCCTouchesOneByOne);
-    // TODO?: Turn timeline into a listview to be able to switch colors. idk tho
+
     auto timelineBg = CCScale9Sprite::createWithSpriteFrameName("AA_square01.png"_spr);
     timelineBg->setContentSize({ 100.f, 162.f });
     timelineBg->setAnchorPoint({ 0.5f, 0.5f });
@@ -60,6 +66,10 @@ bool Timeline::init() {
     if (!m_trackItems) return false;
     m_trackLV = ListView::create(m_trackItems, 27, 100, 162);
     if (!m_trackLV) return false;
+    m_trackLV->setPrimaryCellColor({ 23, 23, 23 });
+    m_trackLV->setSecondaryCellColor({ 38, 0, 59 });
+    m_trackLV->setAnchorPoint({ 1.f, 0.f });
+    timelineBg->addChildAtPosition(m_trackLV, Anchor::BottomRight);
     
     if (!m_trackNames) return false;
     m_nameLV = ListView::create(m_trackNames, 27, 50, 162);
@@ -68,6 +78,32 @@ bool Timeline::init() {
     m_nameLV->setSecondaryCellColor({ 48, 10, 69 });
     m_nameLV->setAnchorPoint({ 0.f, 0.f });
     timelineBg->addChildAtPosition(m_nameLV, Anchor::BottomLeft);
+
+    m_slider = Slider::create(this, menu_selector(Timeline::onZoomMoved), "SliderBar01.png"_spr, "slidergroove2.png", "SliderThumb01.png"_spr, "SliderThumb01.png"_spr, 1.f); // change maybe
+    if (!m_slider) return false;
+    m_slider->setScale(35.f / m_slider->m_width);
+    m_slider->setAnchorPoint({ 1.f, 0.f });
+    m_slider->setValue(m_zoom / 100); // idk if its from 0-1
+    timelineBg->addChildAtPosition(m_slider, Anchor::BottomRight, {10.f, 10.f}); // might have to change
+
+    auto zoom = CCTextInputNode::create(35.f, 35.f, "0%", "cour.ttf");
+    if (!zoom) return false;
+    zoom->setString(std::to_string(m_zoom) + "%");
+    auto textDelegate = new TD();
+    if (!textDelegate) return false;
+    textDelegate->last_string = zoom->getString();
+    zoom->setDelegate(textDelegate);
+
+    m_secondDistance = m_zoom / 5;
+    if (5 >= m_secondDistance || m_secondDistance >= 15) {
+        auto result = numFromString<float>(formatFloat(5.f / m_secondDistance, 2));
+        if (!result) {
+            m_interval = round((5.f / m_secondDistance) * 2.f) / 2.f;
+        } else {
+            m_interval = result.unwrap();
+        }
+    }
+    m_interval = round((5.f / m_secondDistance) * 2.f) / 2.f;
 
     refreshTracks();
 
@@ -121,9 +157,9 @@ void Timeline::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
     // Add keyframe selecting and stuff. Basically just touch handling | Nope bc thats gonna be in Trackline.cpp :)
 }
 
-std::string Timeline::formatTime(float time) {
+std::string Timeline::formatFloat(float num, int precision) {
     std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << time;
+    ss << std::fixed << std::setprecision(precision) << num;
     return ss.str();
 }
 
@@ -139,7 +175,7 @@ void Timeline::updateTime() {
         if (index < m_labels.size()) {
             m_labels[index]->setVisible(true);
         } else {
-            auto label = CCLabelBMFont::create(formatTime(time).c_str(), "cour.ttf");
+            auto label = CCLabelBMFont::create(formatFloat(time, 2).c_str(), "cour.ttf");
             label->setPositionX(time * m_secondDistance);
             m_ruler->addChild(label);
             m_labels.push_back(label);
@@ -159,7 +195,7 @@ float Timeline::getCurrentTime() {
 
 void Timeline::refreshTracks() {
     auto anim = AnimMGR::getCurrentAnimation();
-    if (!anim || !m_trackLV ) return;
+    if (!anim || !m_trackLV || !m_trackItems || !m_nameLV || !m_trackNames) return;
     
     auto index = 1;
     for (auto& track1 : anim->Tracks) {
@@ -186,8 +222,95 @@ void Timeline::refreshTracks() {
                 track.name = label->getString();
                 track.pendingName = false;
                 m_trackNames->addObject(label);
+                m_nameLV->reloadAll();
             }
             index++;
         }
     }
+}
+
+void TD::textInputClosed(CCTextInputNode* node) {
+    if (!node) return;
+    auto text = node->getString();
+    auto filter = std::regex_replace(text, std::regex("[^0-9]+"), "");
+
+    auto EditorUI = EL::get();
+    if (!EditorUI) {
+        node->setString(last_string);
+        return;
+    }
+    auto EL = dynamic_cast<struct EL*>(EditorUI);
+    if (!EL) {
+        node->setString(last_string);
+        return;
+    };
+    auto window = EL->getWindow();
+    if (!window) {
+        node->setString(last_string);
+        return;
+    };
+    auto timeline = window->getTimeline();
+    if (!timeline || !timeline->m_slider || !timeline->m_zoom) {
+        node->setString(last_string);
+        return;
+    };
+
+    if (filter.empty()) {
+        node->setString(last_string);
+        auto LSFilter = std::regex_replace(last_string, std::regex("[^0-9]+"), "");
+        if (LSFilter.empty()) return;
+        auto result = numFromString<float>(LSFilter);
+        if (!result) return;
+        timeline->m_zoom = result.unwrap();
+        timeline->m_slider->setValue(result.unwrap() / 100); // idk if its from 0-1
+        timeline->m_secondDistance = timeline->m_zoom / 5;
+        if (5 >= timeline->m_secondDistance || timeline->m_secondDistance >= 15) {
+            auto result = numFromString<float>(timeline->formatFloat(5.f / timeline->m_secondDistance, 2));
+            if (!result) {
+                timeline->m_interval = round((5.f / timeline->m_secondDistance) * 2.f) / 2.f;
+                return;
+            }
+            timeline->m_interval = result.unwrap();
+        }
+        timeline->m_interval = round((5.f / timeline->m_secondDistance) * 2.f) / 2.f;
+        timeline->refreshTracks();
+    } else {
+        auto result = numFromString<float>(filter);
+        if (!result) {
+            node->setString(last_string);
+            return;
+        }
+        node->setString(filter + "%");
+
+        timeline->m_zoom = result.unwrap();
+        timeline->m_slider->setValue(result.unwrap() / 100); // idk if its from 0-1
+        timeline->m_secondDistance = timeline->m_zoom / 5;
+        if (5 >= timeline->m_secondDistance || timeline->m_secondDistance >= 15) {
+            auto result = numFromString<float>(timeline->formatFloat(5.f / timeline->m_secondDistance, 2));
+            if (!result) {
+                timeline->m_interval = round((5.f / timeline->m_secondDistance) * 2.f) / 2.f;
+                return;
+            }
+            timeline->m_interval = result.unwrap();
+        }
+        timeline->m_interval = round((5.f / timeline->m_secondDistance) * 2.f) / 2.f;
+        timeline->refreshTracks();
+    }
+}
+
+void Timeline::onZoomMoved(CCObject* sender) {
+    auto slider = dynamic_cast<Slider*>(sender);
+    if (!slider) return;
+    m_zoom = slider->getValue() * 100; // idk if its from 0-1
+    m_secondDistance = m_zoom / 5;
+    if (5 >= m_secondDistance || m_secondDistance >= 15) {
+        auto result = numFromString<float>(formatFloat(5.f / m_secondDistance, 2));
+        if (!result) {
+            m_interval = round((5.f / m_secondDistance) * 2.f) / 2.f;
+            return;
+        }
+        m_interval = result.unwrap();
+    }
+    m_interval = round((5.f / m_secondDistance) * 2.f) / 2.f;
+    refreshTracks();
 }

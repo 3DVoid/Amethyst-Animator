@@ -3,25 +3,38 @@
 
 ## UI
 - Create buttons like File, Edit, Options and more - [Window.cpp](src/ui/Window.cpp)
-    - Add add.
+- Selection/Move Mode
 
 ## Logic
-- [CURRENT] Add timeline zooming, make ruler zoom be like every .5 seconds at at higher zoom
-    - Trackline.cpp::112(ccTouchMoved)
 - [LAST] Add Playhead Scrubbing (using .update and stuff) - [AnimationManager.cpp](src/core/AnimationManager.cpp)
-- Add keyframe selecting
+- [CURRENT] Add keyframe selecting - I just added Trackline::selectKeyfame() + selectKeyframe in CCTouchBegan
 - Add cycling keyframe selection
-- [BUILD] Trackline.cpp::61(updateTrackline)
-- Keybinds
+- Snapping
+- Serialization
+- Create commands (UI::1)
+- UI::2
 
 ![](images.jpg)
 
 ## Misc
 - About.md/README.md/logo.png/changelog.md/mod.json/settings
 - EditorUI.cpp::36
+- Keybinds
+
+## BUILD NEEDED
+- Logic
+    - [BUILD] Trackline.cpp::61(updateTrackline)
+    - [BUILD] Timeline.cpp::81(init[slider])
+    - [BUILD] Timeline.cpp::85(init[slider])
+    - [BUILD] Timeline.cpp::86(init[slider])
+    - [BUILD] Timeline.cpp::253(textInputChanged)
+    - [BUILD] Timeline.cpp::263(textInputChanged)
+    - [BUILD] Timeline.cpp::270(onZoomMoved)
 
 
 ## Completed
+- ~~Add timeline zooming, make ruler zoom be like every .5 seconds at at higher zoom~~
+    - ~~Trackline.cpp::112(ccTouchMoved)~~
 - ~~Add keyframe dragging to move keyframes~~
 - ~~Handle colors with Trackline.cpp/Trackline.hpp~~
 - ~~Add playhead, then in [EditorUI.cpp](src/hooks/EditorUI.cpp) add checks for if a keyframe is on the same track and same time then don't auto-create.~~

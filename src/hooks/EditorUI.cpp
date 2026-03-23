@@ -64,10 +64,9 @@ struct EL : Modify<EL, EditorUI> {
             }
 
             if (auto* track = Anim->getTrack(obj->m_uniqueID)) {
-                // TODO: add time and stuff and then check if something is at the time on the same track and if so then dont change.
                 KeyframeData Keyframe;
                 
-                Keyframe.time = m_currentWindow->getTimeline()->getCurrentTime(); // TODO: add to get the current time, playhead is just gonna be everything
+                Keyframe.time = m_currentWindow->getTimeline()->getCurrentTime();
                 if (track->getKeyframe(Keyframe.time) != nullptr) continue;
                 Keyframe.X = obj->m_positionX;
                 Keyframe.Y = obj->m_positionY;

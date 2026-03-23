@@ -8,7 +8,7 @@ using Values = std::variant<float, EasingType, cocos2d::ccColor3B, cocos2d::exte
 
 class Track {
     public:
-        std::vector<KeyframeData> Keyframes;
+        std::vector<KeyframeData*> Keyframes;
         void addKeyframe(const KeyframeData& KF);
         void updateTrack();
         void updateKeyframe(float time, std::string value, Values change);

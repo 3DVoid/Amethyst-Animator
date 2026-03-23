@@ -4,6 +4,13 @@
 
 using namespace cocos2d;
 
+#include "../data/Keyframe.hpp"
+
+struct KeyWithSprite {
+    CCSprite* keyframeSprite;
+    KeyframeData* keyframe;
+};
+
 class Trackline : public CCLayer {
     public:
         int m_ID = -1;
@@ -17,4 +24,7 @@ class Trackline : public CCLayer {
         bool ccTouchBegan(CCTouch *pTouch, cocos2d::CCEvent *pEvent) override;
         void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) override;
         void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) override;
+        void selectKeyframe(int id);
+        std::unordered_map<int, KeyWithSprite> m_selectedKeyframes;
 };
+
