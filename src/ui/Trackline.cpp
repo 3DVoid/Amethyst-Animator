@@ -150,14 +150,27 @@ void Trackline::selectKeyframe(int id) {
     auto track = anim->getTrack(m_ID);
     if (!track) return;
 
-    KeyWithSprite KF;
+    KeyWithSprite* KF;
+    if (!KF) return;
 
-    KF.keyframeSprite = keyframes[id];
-    if (track->Keyframes.size() < KF.keyframeSprite->getTag()) {
+    KF->keyframeSprite = keyframes[id];
+    if (track->Keyframes.size() < KF->keyframeSprite->getTag()) {
             return;
         }
-    KF.keyframe = track->Keyframes[id];
+    KF->keyframe = track->Keyframes[id];
+
+    for (auto i = 0; i < m_selectedKeyframes.size(); i++) {
+        auto keyframe = m_selectedKeyframes[i];
+        auto keyframeSprite = keyframe->keyframeSprite;
+        keyframeSprite->setColor({ 255, 255, 255 });
+    }
     
     m_selectedKeyframes.clear(); // make this an if statement when adding selection mode
     m_selectedKeyframes.insert({id, KF});
+
+    for (auto i = 0; i < m_selectedKeyframes.size(); i++) {
+        auto keyframe = m_selectedKeyframes[i];
+        auto keyframeSprite = keyframe->keyframeSprite;
+        keyframeSprite->setColor({ 171, 255, 172 });
+    }
 }

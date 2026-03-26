@@ -7,12 +7,12 @@
 
 ## Logic
 - [LAST] Add Playhead Scrubbing (using .update and stuff) - [AnimationManager.cpp](src/core/AnimationManager.cpp)
-- [CURRENT] Add keyframe selecting - I just added Trackline::selectKeyfame() + selectKeyframe in CCTouchBegan
-- Add cycling keyframe selection
 - Snapping
 - Serialization
 - Create commands (UI::1)
 - UI::2
+    - [AFTER SELECTION MODE/MOVE MODE] Add keyframe selecting - I just added Trackline::selectKeyfame() + selectKeyframe in CCTouchBegan
+        - Add cycling keyframe selection
 
 ![](images.jpg)
 

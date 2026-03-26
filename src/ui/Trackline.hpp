@@ -25,6 +25,6 @@ class Trackline : public CCLayer {
         void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) override;
         void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) override;
         void selectKeyframe(int id);
-        std::unordered_map<int, KeyWithSprite> m_selectedKeyframes;
+        std::unordered_map<int, KeyWithSprite*> m_selectedKeyframes;
 };
 
